@@ -1,14 +1,12 @@
 {
-  "name": "u_roles_perm",
+  "name": "roles_permissions",
   "version": "1.0.0",
   "description": "A professional Node.js project with role-based access control",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
+    "start": "NODE_ENV=production node src/index.js",
+    "dev": "NODE_ENV=development nodemon src/index.js",
     "format": "prettier --write .",
-    "lint": "eslint . --fix",
-    "precommit": "lint-staged"
   },
   "keywords": [
     "RBAC",
@@ -21,13 +19,17 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
-    "dotenv": "^16.4.7",
+    "cors": "^2.8.5",
     "express": "^4.21.2",
+    "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.10.1"
+    "mongoose": "^8.10.1",
+    "morgan": "^1.10.0",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
-    "lint-staged": "^15.4.3",
+    "dotenv": "^16.4.7",
+    "globals": "^16.0.0",
     "nodemon": "^3.1.9",
     "prettier": "^3.5.2"
   }

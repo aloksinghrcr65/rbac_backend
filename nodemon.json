@@ -1,3 +1,7 @@
 {
-    "ext": "js env"
-}
+    "watch": ["src", ".env"], 
+    "ext": "js,json,env",
+    "ignore": ["node_modules"],
+    "exec": "node src/index.js"
+  }
+  
