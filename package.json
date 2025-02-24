@@ -4,9 +4,9 @@
   "description": "A professional Node.js project with role-based access control",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=production node src/index.js",
-    "dev": "NODE_ENV=development nodemon src/index.js",
-    "format": "prettier --write .",
+    "start": "cross-env NODE_ENV=production node src/index.js",
+    "dev": "cross-env NODE_ENV=development nodemon src/index.js",
+    "format": "prettier --write ."
   },
   "keywords": [
     "RBAC",
@@ -19,15 +19,19 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "express": "^4.21.2",
+    "express-validator": "^7.2.1",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
     "mongoose": "^8.10.1",
     "morgan": "^1.10.0",
     "winston": "^3.17.0"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
     "globals": "^16.0.0",
     "nodemon": "^3.1.9",
