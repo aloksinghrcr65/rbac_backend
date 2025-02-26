@@ -28,3 +28,16 @@ exports.registerValidator = [
         .matches(/[a-z]/).withMessage("Password must contain at least one lowercase letter")
         .matches(/[\W]/).withMessage("Password must contain at least one special character (@, #, $, etc.)"),
 ];
+
+exports.loginValidator = [
+    check("email")
+        .trim()
+        .notEmpty().withMessage("Email is required")
+        .isEmail().withMessage("Please enter a valid email address")
+        .normalizeEmail({ gmail_remove_dots: false })
+        .toLowerCase(),
+
+    check("password")
+        .notEmpty().withMessage("Password is required")
+        .isLength({ min: 8 }).withMessage("Password must be at least 8 characters long")
+];

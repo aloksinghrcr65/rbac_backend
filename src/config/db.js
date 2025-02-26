@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { DB_NAME } = require("../constants");
-const { config } = require("../utils/config");
+const { config } = require("./config");
 
 const { MONGODB } = config;
 

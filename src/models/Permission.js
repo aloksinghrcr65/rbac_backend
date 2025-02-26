@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
-const PermissionSchema = new Schema({
-    permissionsName: {
+const permissionSchema = new Schema({
+    permission_name: {
         type: String,
         required: true,
         unique: true,
@@ -12,3 +12,6 @@ const PermissionSchema = new Schema({
         default: 1
     }
 });
+
+const Permission = model('Permission', permissionSchema);
+module.exports = Permission;

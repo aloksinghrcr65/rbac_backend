@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const { config } = require('./utils/config');
+const { config } = require('./config/config');
 const { CORS_ORIGIN } = config;
 const cookieParser = require('cookie-parser');
 
@@ -16,7 +16,12 @@ app.use(express.static("public"));
 
 app.use(cookieParser());
 
+// auth Route
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
+
+// admin Route
+const adminRoutes = require('./routes/adminRoutes');
+app.use('/api/admin', adminRoutes);
 
 module.exports = { app };

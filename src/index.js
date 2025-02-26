@@ -1,4 +1,4 @@
-const { config } = require("./utils/config");
+const { config } = require("./config/config");
 const { PORT } = config;
 const { connectDB } = require("./config/db");
 const { app } = require("./app");
