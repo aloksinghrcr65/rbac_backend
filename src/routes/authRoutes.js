@@ -2,7 +2,7 @@ const { Router } = require('express');
 const router = Router();
 
 const { userRegister, userLogin, getProfile } = require('../controllers/auth/authController');
-const { registerValidator, loginValidator } = require('../helper/validator');
+const { registerValidator, loginValidator } = require('../helper/authValidator');
 const { authenticate } = require('../middleware/authMiddleware');
 
 router.post('/register', registerValidator, userRegister);

@@ -24,4 +24,8 @@ app.use('/api/auth', authRoutes);
 const adminRoutes = require('./routes/adminRoutes');
 app.use('/api/admin', adminRoutes);
 
+// common Route
+const commonRoutes = require('./routes/commonRoutes');
+app.use('/api', commonRoutes);
+
 module.exports = { app };

@@ -51,6 +51,7 @@ const userRegister = async (req, res) => {
                 username: savedUser.username,
                 name: savedUser.name,
                 email: savedUser.email,
+                role: savedUser.role
             },
         });
     } catch (error) {
