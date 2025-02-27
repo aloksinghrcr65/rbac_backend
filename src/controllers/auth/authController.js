@@ -9,9 +9,9 @@ const userRegister = async (req, res) => {
         // Validate request input
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(422).json({
+            return res.status(400).json({
                 success: false,
-                message: "Validation failed. Please check the input fields.",
+                message: "Invalid input data. Please check your request and try again.",
                 errors: errors.array(),
             });
         }
@@ -67,9 +67,9 @@ const userLogin = async (req, res) => {
         // Validate request input
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(422).json({
+            return res.status(400).json({
                 success: false,
-                message: "Validation failed. Please check the input fields.",
+                message: "Invalid input data. Please check your request and try again.",
                 errors: errors.array(),
             });
         }
