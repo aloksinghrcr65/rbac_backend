@@ -17,7 +17,10 @@ const addPermission = async (req, res) => {
         const { permission_name } = req.body;
 
         // Check if permission already exists
-        const existingPermission = await Permission.findOne({ permission_name });
+        const existingPermission = await Permission.findOne({ permission_name: {
+            $regex: permission_name,
+            $options: 'i'
+        } });
         if (existingPermission) {
             return res.status(409).json({
                 success: false,
@@ -109,7 +112,10 @@ const updatePermission = async (req, res) => {
 
         const isNameAssigned = await Permission.findOne({
             _id: { $ne: id },
-            permission_name
+            permission_name: {
+                $regex: permission_name,
+                $options: 'i'
+            }
         });
 
         if (isNameAssigned) {

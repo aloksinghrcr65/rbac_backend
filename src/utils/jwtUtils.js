@@ -22,7 +22,15 @@ const verifyAccessToken = (token) => {
         return jwt.verify(token, TOKEN_KEY);
     } catch (error) {
         console.error("JWT Verification Error:", error.message);
-        return null;
+
+        // Explicitly handle different types of JWT errors
+        if (error.name === "TokenExpiredError") {
+            throw new Error("Token has expired.");
+        } else if (error.name === "JsonWebTokenError") {
+            throw new Error("Invalid token.");
+        } else {
+            throw new Error("Token verification failed.");
+        }
     }
 };
 
