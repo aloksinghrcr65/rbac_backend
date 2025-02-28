@@ -17,15 +17,15 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 // auth Route
-const authRoutes = require('./routes/authRoutes');
+const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
 
 // admin Route
-const adminRoutes = require('./routes/adminRoutes');
+const adminRoutes = require('./routes/admin');
 app.use('/api/admin', adminRoutes);
 
 // common Route
-const commonRoutes = require('./routes/commonRoutes');
+const commonRoutes = require('./routes/common');
 app.use('/api', commonRoutes);
 
 module.exports = { app };
