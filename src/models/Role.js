@@ -3,7 +3,7 @@ const { Schema, model } = mongoose;
 
 const RoleSchema = new Schema({
     roleName: {
-        tyrpe: String,
+        type: String,
         required: true,
         unique: true,
     },

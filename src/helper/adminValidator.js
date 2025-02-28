@@ -14,3 +14,7 @@ exports.permissionDeleteValidator = [
     query('id').optional().isMongoId().withMessage('Invalid Permission ID format in query.'),
     check('id').optional().isMongoId().withMessage('Invalid Permission ID format in body.')
 ];
+
+exports.roleAddValidator = [
+    check('roleName', 'role name is required').not().isEmpty()
+];
