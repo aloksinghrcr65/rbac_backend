@@ -217,7 +217,7 @@ const updateUserPut = async (req, res) => {
     }
 
     const { id } = req.params;
-    const { name, email, username, password, role } = req.body;
+    const { name, email, username, role } = req.body;
 
     const existingUser = await User.findById(id);
     if (!existingUser) {
@@ -225,6 +225,28 @@ const updateUserPut = async (req, res) => {
         success: false,
         message: "User not found",
       });
+    }
+
+    // Check if the new email already exists (excluding the current user)
+    if (email && email !== existingUser.email) {
+      const emailExist = await User.findOne({ email, _id: { $ne: id } });
+      if (emailExist) {
+        return res.status(409).json({
+          success: false,
+          message: "Email already exists. Please use another.",
+        });
+      }
+    }
+
+    // Check if the new username already exists (excluding the current user)
+    if (username && username !== existingUser.username) {
+      const usernameExist = await User.findOne({ username, _id: { $ne: id } });
+      if (usernameExist) {
+        return res.status(409).json({
+          success: false,
+          message: "Username already exists. Please use another.",
+        });
+      }
     }
 
     if (role && parseInt(role) === 1) {
@@ -237,8 +259,8 @@ const updateUserPut = async (req, res) => {
     // Create a completely new document without keeping missing fields
     const newUserData = {
       name,
-      username,
-      email,
+      username: username || existingUser.username,
+      email: email || existingUser.email,
       password: existingUser.password,
       role: role ? parseInt(role) : undefined,
     };
@@ -289,8 +311,26 @@ const updateUserPatch = async (req, res) => {
     // Prepare update object (only provided fields)
     let updateObj = {};
     if (name) updateObj.name = name;
-    if (username) updateObj.username = username;
-    if (email) updateObj.email = email;
+    if (username) {
+      const usernameExist = await User.findOne({ username });
+      if (usernameExist) {
+        return res.status(409).json({
+          success: false,
+          message: "Username already exists. Please use another.",
+        });
+      }
+      updateObj.username = username;
+    }
+    if (email) {
+      const emailExist = await User.findOne({ email });
+      if (emailExist) {
+        return res.status(409).json({
+          success: false,
+          message: "Email already exists. Please use another.",
+        });
+      }
+      updateObj.email = email;
+    }
 
     if (role) {
       if (parseInt(role) === 1) {
@@ -337,16 +377,24 @@ const deleteUser = async (req, res) => {
 
     const { id } = req.body;
 
-    const user = await User.findByIdAndDelete(id);
+    const user = await User.findById(id);
     if (!user) {
-        return res.status(404).json({
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (user.role || user.role === 1) {
+        return res.status(400).json({
             success: false,
-            message: "User not found"
+            message: "Sorry, you don't have permission to delete an admin"
         })
     }
+    await User.findByIdAndDelete(id);
     return res.status(200).json({
-        success: true,
-        message: "User deleted successfully"
+      success: true,
+      message: "User deleted successfully",
     });
   } catch (error) {
     return res.status(500).json({
