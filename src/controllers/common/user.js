@@ -91,7 +91,9 @@ const createUser = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password -__v").lean();
+    const users = await User.find({ _id: {
+        $ne: req.user.id
+    }}).select("-password -__v").lean();
     if (!users || users.length === 0) {
       return res.status(400).json({
         success: false,
@@ -162,12 +164,37 @@ const updateUser = async (req, res) => {
     }
 
     const { id, name, email, username } = req.body;
-    const isExists = await User.findById(id);
-    if (!isExists) {
+    // Fetch user and check for existing email/username in parallel
+    const [existingUser, conflictingUser] = await Promise.all([
+      User.findById(id),
+      email || username
+        ? User.findOne({
+            $or: [{ email }, { username }],
+            _id: { $ne: id }, // Exclude the current user
+          })
+        : null,
+    ]);
+
+    if (!existingUser) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
+    }
+
+    if (conflictingUser) {
+      if (conflictingUser.email === email) {
+        return res.status(409).json({
+          success: false,
+          message: "Email already exists. Please use another.",
+        });
+      }
+      if (conflictingUser.username === username) {
+        return res.status(409).json({
+          success: false,
+          message: "Username already exists. Please use another.",
+        });
+      }
     }
 
     let updateObj = {
@@ -219,7 +246,15 @@ const updateUserPut = async (req, res) => {
     const { id } = req.params;
     const { name, email, username, role } = req.body;
 
-    const existingUser = await User.findById(id);
+    // Fetch existing user and check if email or username is already used by another user
+    const [existingUser, existingUserCheck] = await Promise.all([
+      User.findById(id),
+      User.findOne({
+        $or: [{ email }, { username }],
+        _id: { $ne: id }, // Exclude current user
+      }),
+    ]);
+
     if (!existingUser) {
       return res.status(404).json({
         success: false,
@@ -227,21 +262,14 @@ const updateUserPut = async (req, res) => {
       });
     }
 
-    // Check if the new email already exists (excluding the current user)
-    if (email && email !== existingUser.email) {
-      const emailExist = await User.findOne({ email, _id: { $ne: id } });
-      if (emailExist) {
+    if (existingUserCheck) {
+      if (existingUserCheck.email === email) {
         return res.status(409).json({
           success: false,
           message: "Email already exists. Please use another.",
         });
       }
-    }
-
-    // Check if the new username already exists (excluding the current user)
-    if (username && username !== existingUser.username) {
-      const usernameExist = await User.findOne({ username, _id: { $ne: id } });
-      if (usernameExist) {
+      if (existingUserCheck.username === username) {
         return res.status(409).json({
           success: false,
           message: "Username already exists. Please use another.",
@@ -256,25 +284,24 @@ const updateUserPut = async (req, res) => {
       });
     }
 
-    // Create a completely new document without keeping missing fields
-    const newUserData = {
-      name,
-      username: username || existingUser.username,
-      email: email || existingUser.email,
-      password: existingUser.password,
-      role: role ? parseInt(role) : undefined,
-    };
+    // Update user
+    existingUser.name = name || existingUser.name;
+    existingUser.username = username || existingUser.username;
+    existingUser.email = email || existingUser.email;
+    existingUser.role = role ? parseInt(role) : existingUser.role;
 
-    // Completely replace the document
-    await User.replaceOne({ _id: id }, newUserData);
-
-    // Fetch the updated user
-    const updatedUser = await User.findById(id).select("-password");
+    await existingUser.save();
 
     return res.status(200).json({
       success: true,
       message: "User updated successfully",
-      user: updatedUser,
+      user: {
+        _id: existingUser._id,
+        name: existingUser.name,
+        email: existingUser.email,
+        username: existingUser.username,
+        role: existingUser.role,
+      },
     });
   } catch (error) {
     return res.status(500).json({
@@ -300,7 +327,17 @@ const updateUserPatch = async (req, res) => {
     const { id } = req.params;
     const { name, email, username, role } = req.body;
 
-    const existingUser = await User.findById(id);
+    // Fetch user and check for existing email/username in parallel
+    const [existingUser, conflictingUser] = await Promise.all([
+      User.findById(id),
+      email || username
+        ? User.findOne({
+            $or: [{ email }, { username }],
+            _id: { $ne: id }, // Exclude the current user
+          })
+        : null,
+    ]);
+
     if (!existingUser) {
       return res.status(404).json({
         success: false,
@@ -308,41 +345,36 @@ const updateUserPatch = async (req, res) => {
       });
     }
 
-    // Prepare update object (only provided fields)
-    let updateObj = {};
-    if (name) updateObj.name = name;
-    if (username) {
-      const usernameExist = await User.findOne({ username });
-      if (usernameExist) {
-        return res.status(409).json({
-          success: false,
-          message: "Username already exists. Please use another.",
-        });
-      }
-      updateObj.username = username;
-    }
-    if (email) {
-      const emailExist = await User.findOne({ email });
-      if (emailExist) {
+    if (conflictingUser) {
+      if (conflictingUser.email === email) {
         return res.status(409).json({
           success: false,
           message: "Email already exists. Please use another.",
         });
       }
-      updateObj.email = email;
-    }
-
-    if (role) {
-      if (parseInt(role) === 1) {
-        return res.status(400).json({
+      if (conflictingUser.username === username) {
+        return res.status(409).json({
           success: false,
-          message: "Sorry, you don't have permission to create an admin",
+          message: "Username already exists. Please use another.",
         });
       }
-      updateObj.role = parseInt(role);
     }
 
-    // Partial update - Updates only provided fields
+    if (role && parseInt(role) === 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Sorry, you don't have permission to create an admin",
+      });
+    }
+
+    // Prepare update object
+    const updateObj = {};
+    if (name) updateObj.name = name;
+    if (username) updateObj.username = username;
+    if (email) updateObj.email = email;
+    if (role) updateObj.role = parseInt(role);
+
+    // Update the user
     const updatedUser = await User.findByIdAndUpdate(
       id,
       { $set: updateObj },
@@ -386,10 +418,10 @@ const deleteUser = async (req, res) => {
     }
 
     if (user.role || user.role === 1) {
-        return res.status(400).json({
-            success: false,
-            message: "Sorry, you don't have permission to delete an admin"
-        })
+      return res.status(400).json({
+        success: false,
+        message: "Sorry, you don't have permission to delete an admin",
+      });
     }
     await User.findByIdAndDelete(id);
     return res.status(200).json({

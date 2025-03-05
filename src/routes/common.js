@@ -24,6 +24,7 @@ const {
   updateUserPatch,
   deleteUser
 } = require("../controllers/common/user");
+const { likePost, unlikePost, toggleLikePost, postLikeCount } = require('../controllers/common/like-unlike');
 const {
   categoryAddValidator,
   categoryIdValidator,
@@ -31,6 +32,8 @@ const {
   postCreateValidator,
   postIdValidator,
   postUpdateValidator,
+  postLikeUnlikeValidator,
+  postLikeCountValidator
 } = require("../helper/commonValidator");
 const {
   createUserValidator,
@@ -82,5 +85,17 @@ router.patch(
     updateUserPatch
 ); // specific update
 router.delete("/delete-user", authenticate, userIdValidator, deleteUser);
+
+// Like and Unlike routes
+// router.post('/post-like', authenticate, postLikeUnlikeValidator, likePost);
+router.post('/post-like', authenticate, postLikeCountValidator, likePost);
+
+// router.post('/post-unlike', authenticate, postLikeUnlikeValidator, unlikePost);
+router.post('/post-unlike', authenticate, postLikeCountValidator, unlikePost);
+
+// router.post('/toggle-like', authenticate, postLikeUnlikeValidator, toggleLikePost);
+router.post('/toggle-like', authenticate, postLikeCountValidator, toggleLikePost);
+
+router.post('/count-like', authenticate, postLikeCountValidator, postLikeCount);
 
 module.exports = router;

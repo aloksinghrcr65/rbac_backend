@@ -27,3 +27,12 @@ exports.postUpdateValidator = [
     check('title', 'name is required').not().isEmpty(),
     check('description', "description is required").not().isEmpty()
 ];
+
+exports.postLikeUnlikeValidator = [
+    check('user_id', 'user id is required').not().isEmpty(),
+    check('post_id', 'post id is required').not().isEmpty(),
+];
+
+exports.postLikeCountValidator = [
+    check('post_id', 'post id is required').not().isEmpty(),
+];
