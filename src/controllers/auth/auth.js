@@ -127,11 +127,49 @@ const userLogin = async (req, res) => {
         // Generate JWT token
         const token = generateAccessToken(payload);
 
+        // get user data with all permissions 
+        const allPermissions = await User.aggregate([
+            {
+                $match: { email: payload.email }
+            },
+            {
+                $lookup: {
+                    from: "userpermissions",
+                    localField: "_id",
+                    foreignField: "user_id",
+                    as: "permissions"
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    email: 1,
+                    role: 1,
+                    permissions: {
+                        $cond: {
+                            if: { $isArray: "$permissions" },
+                            then: { $arrayElemAt: [ "$permissions", 0 ]},
+                            else: null
+                        }
+                    }
+                }
+            },
+            {
+                $addFields: {
+                    "permissions": {
+                        "permissions": "$permissions.permissions"
+                    }
+                }
+            }
+        ])
+
         return res.status(200).json({
             success: true,
             message: "Login successful",
             token,
-            user: payload, // Return user details
+            user: payload,
+            permissions: allPermissions[0]
         });
     } catch (error) {
         return res.status(500).json({
