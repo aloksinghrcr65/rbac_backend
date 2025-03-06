@@ -1,6 +1,9 @@
 const User = require("../../models/User");
+const Permission = require("../../models/Permission");
+const UserPermissions = require("../../models/UserPermission");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
 const randomstring = require("randomstring");
 const sendMail = require("../../utils/sendMail");
 const generateEmailTemplate = require("../../utils/generateEmailTemplate");
@@ -61,6 +64,32 @@ const createUser = async (req, res) => {
     const userData = await user.save();
     userData.password = undefined;
 
+    let permissions = [];
+
+    // Add permissions if provided in request
+    if (req.body.permissions !== undefined && req.body.permissions.length > 0) {
+      const addPermissions = req.body.permissions;
+
+      const permissionArray = [];
+      await Promise.all(addPermissions.map(async (permission) => {
+        const permissionData = await Permission.findById(permission.id);
+        if (permissionData) {
+          permissionArray.push({
+            permission_name: permissionData.permission_name,
+            permission_value: permission.value,
+          });
+        }
+      }));
+
+      const userPermissions = new UserPermissions({
+        user_id: user._id,
+        permissions: permissionArray
+      });
+
+      await userPermissions.save();
+      permissions = permissionArray; // Store permissions for response
+    }
+
     // Generate email content
     const emailContent = await generateEmailTemplate(
       name,
@@ -69,16 +98,17 @@ const createUser = async (req, res) => {
       user.role
     );
 
-    await sendMail(
-      email,
-      "Welcome to Makeup-Pro! 🎉 Your Account Details",
-      emailContent
-    );
+    // await sendMail(
+    //   email,
+    //   "Welcome to Makeup-Pro! 🎉 Your Account Details",
+    //   emailContent
+    // );
 
     return res.status(201).json({
       success: true,
       message: "User Registered Successfully",
       user: userData,
+      permissions: permissions
     });
   } catch (error) {
     return res.status(500).json({
@@ -91,9 +121,48 @@ const createUser = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    const users = await User.find({ _id: {
-        $ne: req.user.id
-    }}).select("-password -__v").lean();
+    // const users = await User.find({ _id: {
+    //     $ne: req.user.id
+    // }}).select("-password -__v").lean();
+
+    const users = await User.aggregate([
+      {
+        $match: {
+          _id: { $ne: new mongoose.Types.ObjectId(req.user.id) },
+        },
+      },
+      {
+        $lookup: {
+          from: "userpermissions",
+          localField: "_id",
+          foreignField: "user_id",
+          as: "permissions",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          username: 1,
+          email: 1,
+          role: 1,
+          permissions: {
+            $cond: {
+              if: { $isArray: "$permissions" },
+              then: { $arrayElemAt: ["$permissions", 0] },
+              else: null,
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          permissions: {
+            permissions: "$permissions.permissions",
+          },
+        },
+      },
+    ]);
     if (!users || users.length === 0) {
       return res.status(400).json({
         success: false,

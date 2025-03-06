@@ -144,6 +144,7 @@ const userLogin = async (req, res) => {
                 $project: {
                     _id: 1,
                     name: 1,
+                    username: 1,
                     email: 1,
                     role: 1,
                     permissions: {
@@ -168,8 +169,7 @@ const userLogin = async (req, res) => {
             success: true,
             message: "Login successful",
             token,
-            user: payload,
-            permissions: allPermissions[0]
+            data: allPermissions[0]
         });
     } catch (error) {
         return res.status(500).json({
