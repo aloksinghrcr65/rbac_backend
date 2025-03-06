@@ -7,13 +7,12 @@ const userPermissionSchema = new Schema({
         ref: 'User',
         required: true
     },
-    permissions: {
+    permissions: [{
         permission_name: {
             type: String,
-            required: true
         },
-        permission_value: [Number]
-    }
+        permission_value: [Number] // 0 => Create, 1 => Read, 2 => Update, 3 => Delete
+    }]
 });
 
 const UserPermissions = model('UserPermission', userPermissionSchema);

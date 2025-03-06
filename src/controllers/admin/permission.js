@@ -30,7 +30,7 @@ const addPermission = async (req, res) => {
 
         let obj = { permission_name };
 
-        if (req.body.default) {
+        if (req.body.default !== null) {
             obj.is_default = parseInt(req.body.default);
         }
 

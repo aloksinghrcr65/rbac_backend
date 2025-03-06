@@ -1,4 +1,6 @@
 const User = require('../../models/User');
+const Permission = require('../../models/Permission');
+const UserPermissions = require('../../models/UserPermission');
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
@@ -38,6 +40,27 @@ const userRegister = async (req, res) => {
         const user = new User(userData);
         const savedUser = await user.save();
 
+        // assign default permissions
+        const defaultPermissions = await Permission.find({
+            is_default: 1
+        });
+
+        if (defaultPermissions.length > 0) {
+            const permissionArray = [];
+            defaultPermissions.forEach(permission => {
+                permissionArray.push({
+                    permission_name: permission.permission_name,
+                    permission_value: [0, 1, 2, 3]
+                })
+            });
+            const userPermissions = new UserPermissions({
+                user_id: savedUser._id,
+                permissions: permissionArray
+            });
+
+            var userPermissionsData = await userPermissions.save();
+        }
+
 
         // savedUser.password = undefined;
         // savedUser.__v = undefined;
@@ -53,6 +76,7 @@ const userRegister = async (req, res) => {
                 email: savedUser.email,
                 role: savedUser.role
             },
+            permissions: userPermissionsData
         });
     } catch (error) {
         return res.status(500).json({
