@@ -28,4 +28,12 @@ app.use('/api/admin', adminRoutes);
 const commonRoutes = require('./routes/common');
 app.use('/api', commonRoutes);
 
+const { authenticate } = require("./middleware/authMiddleware");
+const { onlyAdminAccess } = require("./middleware/adminMiddleware");
+
+// AllRoutes route
+const { getAllRoutes } = require('./controllers/admin/routerController');
+app.get('/api/admin/get-routes', authenticate, onlyAdminAccess, getAllRoutes);
+
+
 module.exports = { app };

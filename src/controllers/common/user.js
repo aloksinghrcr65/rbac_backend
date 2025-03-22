@@ -71,19 +71,21 @@ const createUser = async (req, res) => {
       const addPermissions = req.body.permissions;
 
       const permissionArray = [];
-      await Promise.all(addPermissions.map(async (permission) => {
-        const permissionData = await Permission.findById(permission.id);
-        if (permissionData) {
-          permissionArray.push({
-            permission_name: permissionData.permission_name,
-            permission_value: permission.value,
-          });
-        }
-      }));
+      await Promise.all(
+        addPermissions.map(async (permission) => {
+          const permissionData = await Permission.findById(permission.id);
+          if (permissionData) {
+            permissionArray.push({
+              permission_name: permissionData.permission_name,
+              permission_value: permission.value,
+            });
+          }
+        })
+      );
 
       const userPermissions = new UserPermissions({
         user_id: user._id,
-        permissions: permissionArray
+        permissions: permissionArray,
       });
 
       await userPermissions.save();
@@ -108,7 +110,7 @@ const createUser = async (req, res) => {
       success: true,
       message: "User Registered Successfully",
       user: userData,
-      permissions: permissions
+      permissions: permissions,
     });
   } catch (error) {
     return res.status(500).json({
@@ -286,6 +288,33 @@ const updateUser = async (req, res) => {
       { $set: updateObj },
       { new: true, runValidators: true }
     ).select("-password");
+
+    let permissions = [];
+
+    // Add permissions if provided in request
+    if (req.body.permissions !== undefined && req.body.permissions.length > 0) {
+      const addPermissions = req.body.permissions;
+
+      const permissionArray = [];
+      await Promise.all(
+        addPermissions.map(async (permission) => {
+          const permissionData = await Permission.findById(permission.id);
+          if (permissionData) {
+            permissionArray.push({
+              permission_name: permissionData.permission_name,
+              permission_value: permission.value,
+            });
+          }
+        })
+      );
+
+      const updatePermission = await UserPermissions.findOneAndUpdate(
+        { user_id: updateUser._id },
+        { permissions: permissionArray },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
+    }
+
     return res.status(200).json({
       success: true,
       message: "User Updated Successfully",

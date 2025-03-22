@@ -5,7 +5,9 @@ const {
   permissionAddValidator,
   permissionUpdateValidator,
   permissionDeleteValidator,
-  roleAddValidator
+  roleAddValidator,
+  addRouterPermissionValidator,
+  getRouterPermissionsValidator,
 } = require("../helper/adminValidator");
 const { authenticate } = require("../middleware/authMiddleware");
 const { onlyAdminAccess } = require("../middleware/adminMiddleware");
@@ -15,7 +17,11 @@ const {
   updatePermission,
   deletePermission,
 } = require("../controllers/admin/permission");
-const { createRole, getRoles } = require('../controllers/admin/role'); 
+const { createRole, getRoles } = require("../controllers/admin/role");
+const {
+  addRouterPermission,
+  getRouterPermissions,
+} = require("../controllers/admin/routerController");
 
 // Permission Routes
 router.post(
@@ -42,6 +48,36 @@ router.delete(
 );
 
 // Role Routes
-router.post('/create-role', authenticate, onlyAdminAccess, roleAddValidator, createRole);
-router.get('/get-roles', authenticate, onlyAdminAccess, roleAddValidator, getRoles);
+router.post(
+  "/create-role",
+  authenticate,
+  onlyAdminAccess,
+  roleAddValidator,
+  createRole
+);
+router.get(
+  "/get-roles",
+  authenticate,
+  onlyAdminAccess,
+  roleAddValidator,
+  getRoles
+);
+
+// Router Permission routes
+router.post(
+  "/add-router-permission",
+  authenticate,
+  onlyAdminAccess,
+  addRouterPermissionValidator,
+  addRouterPermission
+);
+
+router.get(
+  "/get-router-permissions",
+  authenticate,
+  onlyAdminAccess,
+  getRouterPermissionsValidator,
+  getRouterPermissions
+);
+
 module.exports = router;
