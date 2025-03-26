@@ -50,10 +50,10 @@ const addRouterPermission = async (req, res) => {
       });
     }
 
-    const { router_endpoint, role, permission } = req.body;
+    const { router_endpoint, role, permission_id, permission } = req.body;
     const routerPermission = await RouterPermission.findOneAndUpdate(
       { router_endpoint, role },
-      { router_endpoint, role, permission },
+      { router_endpoint, role, permission_id, permission },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 
@@ -86,7 +86,7 @@ const getRouterPermissions = async (req, res) => {
 
     const routerPermissions = await RouterPermission.find({
       router_endpoint
-    });
+    }).populate('permission_id').select('-__v').lean();
 
     return res.status(200).json({
       success: true,

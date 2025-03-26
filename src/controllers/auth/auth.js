@@ -5,6 +5,7 @@ const { validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
 const { generateAccessToken } = require('../../utils/jwtUtils');
+const { getUserPermissions } = require('../../helper/helper.js');
 
 const userRegister = async (req, res) => {
     try {
@@ -203,11 +204,29 @@ const getProfile = async (req, res) => {
             error: error.message
         })
     }
+};
+
+const getRefreshPermissions = async (req, res) => {
+    try {
+        const user_id = req.user.id;
+
+        const userpermissions = await getUserPermissions(user_id);
+        return res.status(200).json({
+            success: true,
+            message: "User Permissions",
+            data: userpermissions
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message
+        })
+    }
 }
-
-
 module.exports = {
     userRegister,
     userLogin,
-    getProfile
+    getProfile, 
+    getRefreshPermissions
 }
