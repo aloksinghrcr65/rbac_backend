@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { verifyAccessToken } = require('../utils/jwtUtils');
+const { verifyAccessToken } = require('../utils/jwt-utils');
 
 /**
  * Middleware to authenticate users based on JWT.

@@ -1,5 +1,5 @@
 const { validationResult } = require("express-validator");
-const RouterPermission = require("../../models/RouterPermission");
+const RouterPermission = require("../../models/router-permission.model");
 
 const getAllRoutes = async (req, res) => {
   try {

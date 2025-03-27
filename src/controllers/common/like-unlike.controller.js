@@ -1,5 +1,5 @@
-const Like = require("../../models/Like");
-const Post = require("../../models/Post");
+const Like = require("../../models/like.model");
+const Post = require("../../models/post.model");
 const { validationResult } = require("express-validator");
 
 // const likePost = async (req, res) => {

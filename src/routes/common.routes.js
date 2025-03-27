@@ -7,14 +7,14 @@ const {
   getCategoryById,
   updateCategory,
   deleteCategory,
-} = require("../controllers/common/category");
+} = require("../controllers/common/category.controller");
 const {
   createPost,
   getPosts,
   getPostById,
   editPost,
   deletePost,
-} = require("../controllers/common/post");
+} = require("../controllers/common/post.controller");
 const {
   createUser,
   getUsers,
@@ -23,8 +23,8 @@ const {
   updateUserPut,
   updateUserPatch,
   deleteUser
-} = require("../controllers/common/user");
-const { likePost, unlikePost, toggleLikePost, postLikeCount } = require('../controllers/common/like-unlike');
+} = require("../controllers/common/user.controller");
+const { likePost, unlikePost, toggleLikePost, postLikeCount } = require('../controllers/common/like-unlike.controller');
 const {
   categoryAddValidator,
   categoryIdValidator,
@@ -34,15 +34,15 @@ const {
   postUpdateValidator,
   postLikeUnlikeValidator,
   postLikeCountValidator
-} = require("../helper/commonValidator");
+} = require("../helper/validators/common.validator");
 const {
   createUserValidator,
   userIdValidator,
   updateUserValidator,
   partialUpdateValidator,
-} = require("../helper/authValidator");
-const { authenticate } = require("../middleware/authMiddleware");
-const { checkPermission } = require("../middleware/checkPermission");
+} = require("../helper/validators/auth.validator");
+const { authenticate } = require("../middleware/auth.middleware");
+const { checkPermission } = require("../middleware/check-permission.middleware");
 
 // Category routes
 router.post("/add-category", authenticate, checkPermission, categoryAddValidator, addCategory);

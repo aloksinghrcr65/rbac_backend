@@ -1,4 +1,4 @@
-const helper = require('../helper/helper');
+const helper = require('../helper/helper.utils');
 
 const checkPermission = async (req, res, next) => {
     try {

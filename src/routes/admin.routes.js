@@ -8,20 +8,20 @@ const {
   roleAddValidator,
   addRouterPermissionValidator,
   getRouterPermissionsValidator,
-} = require("../helper/adminValidator");
-const { authenticate } = require("../middleware/authMiddleware");
-const { onlyAdminAccess } = require("../middleware/adminMiddleware");
+} = require("../helper/validators/admin.validator");
+const { authenticate } = require("../middleware/auth.middleware");
+const { onlyAdminAccess } = require("../middleware/admin.middleware");
 const {
   addPermission,
   getPermissions,
   updatePermission,
   deletePermission,
-} = require("../controllers/admin/permission");
-const { createRole, getRoles } = require("../controllers/admin/role");
+} = require("../controllers/admin/permission.controller");
+const { createRole, getRoles } = require("../controllers/admin/role.controller");
 const {
   addRouterPermission,
   getRouterPermissions,
-} = require("../controllers/admin/routerController");
+} = require("../controllers/admin/router.controller");
 
 // Permission Routes
 router.post(

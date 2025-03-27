@@ -1,4 +1,4 @@
-const Category = require('../../models/Category');
+const Category = require('../../models/category.model');
 const { validationResult } = require('express-validator');
 
 const addCategory = async (req, res) => {

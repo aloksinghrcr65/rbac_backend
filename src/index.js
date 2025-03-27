@@ -1,6 +1,6 @@
-const { config } = require("./config/config");
+const { config } = require("./config/constants.config");
 const { PORT } = config;
-const { connectDB } = require("./config/db");
+const { connectDB } = require("./config/db.config");
 const { app } = require("./app");
 
 connectDB().then(() => {

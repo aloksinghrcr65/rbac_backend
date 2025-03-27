@@ -1,6 +1,6 @@
 const { default: mongoose } = require('mongoose');
-const User = require('../models/User');
-const RouterPermission = require('../models/RouterPermission');
+const User = require('../models/user.model');
+const RouterPermission = require('../models/router-permission.model');
 
 const getUserPermissions = async (user_id) => {
     try {

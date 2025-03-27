@@ -1,5 +1,5 @@
-const Post = require("../../models/Post");
-const Category = require("../../models/Category");
+const Post = require("../../models/post.model");
+const Category = require("../../models/category.model");
 const { validationResult } = require("express-validator");
 
 const createPost = async (req, res) => {

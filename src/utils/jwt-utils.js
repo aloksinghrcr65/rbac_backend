@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { config } = require('../config/config');
+const { config } = require('../config/constants.config');
 const { TOKEN_KEY } = config;
 
 /**

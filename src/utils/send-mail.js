@@ -1,5 +1,5 @@
 const { createTransport } = require("nodemailer");
-const { config } = require("../config/config");
+const { config } = require("../config/constants.config");
 const { EMAIL, SECURE_PASS } = config;
 
 const transporter = createTransport({

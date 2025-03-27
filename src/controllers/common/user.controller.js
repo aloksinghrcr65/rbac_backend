@@ -1,12 +1,12 @@
-const User = require("../../models/User");
-const Permission = require("../../models/Permission");
-const UserPermissions = require("../../models/UserPermission");
+const User = require("../../models/user.model");
+const Permission = require("../../models/permission.model");
+const UserPermissions = require("../../models/user-permission.model");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const randomstring = require("randomstring");
-const sendMail = require("../../utils/sendMail");
-const generateEmailTemplate = require("../../utils/generateEmailTemplate");
+const sendMail = require("../../utils/send-mail");
+const generateEmailTemplate = require("../../utils/email-template");
 
 const createUser = async (req, res) => {
   try {

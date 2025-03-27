@@ -1,11 +1,11 @@
-const User = require('../../models/User');
-const Permission = require('../../models/Permission');
-const UserPermissions = require('../../models/UserPermission');
+const User = require('../../models/user.model');
+const Permission = require('../../models/permission.model.js');
+const UserPermissions = require('../../models/user-permission.model');
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
-const { generateAccessToken } = require('../../utils/jwtUtils');
-const { getUserPermissions } = require('../../helper/helper.js');
+const { generateAccessToken } = require('../../utils/jwt-utils');
+const { getUserPermissions } = require('../../helper/helper.utils');
 
 const userRegister = async (req, res) => {
     try {

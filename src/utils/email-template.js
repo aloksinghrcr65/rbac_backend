@@ -1,4 +1,4 @@
-const Role = require('../models/Role');
+const Role = require('../models/role.model');
 const generateEmailTemplate = async (name, email, password, role) => {
     const { roleName } = await Role.findOne({ value: role });
     
