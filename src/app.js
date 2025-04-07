@@ -32,7 +32,7 @@ const { authenticate } = require("./middleware/auth.middleware");
 const { onlyAdminAccess } = require("./middleware/admin.middleware");
 
 // AllRoutes route
-const { getAllRoutes } = require('./controllers/admin/router.controller');
+const { getAllRoutes } = require('./controllers/admin/routerPermission.controller');
 app.get('/api/admin/get-routes', authenticate, onlyAdminAccess, getAllRoutes);
 
 

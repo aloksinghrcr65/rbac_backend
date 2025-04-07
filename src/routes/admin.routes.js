@@ -21,7 +21,7 @@ const { createRole, getRoles } = require("../controllers/admin/role.controller")
 const {
   addRouterPermission,
   getRouterPermissions,
-} = require("../controllers/admin/router.controller");
+} = require("../controllers/admin/routerPermission.controller");
 
 // Permission Routes
 router.post(
